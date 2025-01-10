@@ -35,6 +35,7 @@ CREATE TABLE PEDIDOS (
     fecha_entrega_real DATETIME,
     total INT,
     id_escala INT,
+	codigo_seguimienti VARCHAR(20),
     FOREIGN KEY (id_cliente) REFERENCES CLIENTES(id_cliente) ON DELETE SET NULL,
     FOREIGN KEY (id_escala) REFERENCES ESCALA(id_escala) ON DELETE SET NULL
 );
