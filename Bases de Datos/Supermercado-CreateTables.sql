@@ -63,7 +63,8 @@ CREATE TABLE PEDIDOS (
     id_pedido INT IDENTITY(1,1) PRIMARY KEY,
     id_proveedor INT,
     estado VARCHAR(20) NOT NULL, -- Referencia a EstadosPedido
-    fecha_entrega_prevista DATETIME,
+    codigo_seguimiento VARCHAR(20),
+	fecha_entrega_prevista DATETIME,
     fecha_entrega_real DATETIME,
     fecha_pedido DATETIME,
     total INT,
