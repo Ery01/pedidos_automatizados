@@ -98,3 +98,39 @@ CREATE TABLE RANKING_PROVEEDOR (
     FOREIGN KEY (id_escala) REFERENCES ESCALA_PROVEEDORES(id_escala), -- Relación con PEDIDOS
     FOREIGN KEY (id_proveedor) REFERENCES PROVEEDORES(id_proveedor)
 );
+
+-- Proveedor 1
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+VALUES
+(1, 'A', 1.0, 'Excelente'),
+(1, 'B', 0.8, 'Muy Bueno'),
+(1, 'C', 0.6, 'Bueno'),
+(1, 'D', 0.4, 'Regular'),
+(1, 'E', 0.2, 'Malo');
+
+-- Proveedor 2
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+VALUES
+(2, 5, 1.0, 'Excelente'),
+(2, 4, 0.8, 'Muy Bueno'),
+(2, 3, 0.6, 'Bueno'),
+(2, 2, 0.4, 'Regular'),
+(2, 1, 0.2, 'Malo');
+
+-- Proveedor 3
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+VALUES
+(3, 100, 1.0, 'Excelente'),
+(3, 80, 0.8, 'Muy Bueno'),
+(3, 60, 0.6, 'Bueno'),
+(3, 40, 0.4, 'Regular'),
+(3, 20, 0.2, 'Malo');
+
+-- Proveedor 4
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+VALUES
+(4, '*****', 1.0, 'Excelente'),
+(4, '****', 0.8, 'Muy Bueno'),
+(4, '***', 0.6, 'Bueno'),
+(4, '**', 0.4, 'Regular'),
+(4, '*', 0.2, 'Malo');
