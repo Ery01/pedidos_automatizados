@@ -91,6 +91,7 @@ BEGIN
     -- Extraer valores del JSON
     SELECT
         @id_pedido = JSON_VALUE(@json, '$.id_pedido'),
+		@escala = JSON_VALUE(@json, '$.escala'),
         @evaluacion = JSON_VALUE(@json, '$.evaluacion');
 
     -- Obtener el proveedor y el estado del pedido
@@ -115,19 +116,20 @@ BEGIN
     END
 
     -- Validar si la evaluación existe en la tabla RANKING_PROVEEDOR
-    SELECT @ponderacion = ponderacion
+    SELECT 1 --@ponderacion = ponderacion
     FROM RANKING_PROVEEDOR
-    WHERE id_proveedor = @id_proveedor AND descripcion_valor = @evaluacion;
+    WHERE id_proveedor = @id_proveedor AND id_escala = @escala;
 
-    IF @ponderacion IS NULL
+    --IF @ponderacion IS NULL
     BEGIN
-        RAISERROR('La evaluación no es válida para el proveedor. No se puede evaluar el pedido.', 16, 1);
+        --RAISERROR('La evaluación no es válida para el proveedor. No se puede evaluar el pedido.', 16, 1);
+		RAISERROR('La evaluación no es válida para el proveedor. No coincide la escala.', 16, 1);
         RETURN;
     END
 
     -- Actualizar la evaluación del pedido
     UPDATE PEDIDOS
-    SET id_escala = (SELECT id_escala FROM ESCALA_PROVEEDORES WHERE id_proveedor = @id_proveedor),
+    SET puntaje = @evaluacion,
         fecha_evaluacion = GETDATE(),
         estado = 'EVALUADO'
     WHERE id_pedido = @id_pedido;
@@ -167,7 +169,7 @@ DECLARE @id_proveedor VARCHAR(150) = JSON_VALUE(@json, '$.id_proveedor');
 
     -- Generar el JSON desde la tabla CONFIGURACION
     SELECT @jsonResult = (
-        SELECT * FROM RANKING 
+        SELECT * FROM RANKING_PROVEEDOR
 		WHERE id_proveedor = @id_proveedor
 		ORDER BY ponderacion
         FOR JSON AUTO

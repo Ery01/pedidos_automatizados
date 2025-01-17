@@ -14,7 +14,8 @@ CREATE TABLE PROVEEDORES (
     nombre_url VARCHAR(150),  -- URL del proveedor para conexión
     token VARCHAR(150),       -- Token de autenticación para conexión
     tecnologia VARCHAR(50),
-    habilitado BIT DEFAULT 0,	
+    habilitado BIT DEFAULT 0,
+	puntaje DECIMAL (10,2),
     fecha_actualizacion_proveedor DATETIME
 );
 
@@ -52,9 +53,10 @@ VALUES
 ('ENTREGADO', 'Pedido entregado exitosamente.'),
 ('CANCELADO', 'Pedido cancelado por el cliente o sistema.');
 
+
 CREATE TABLE ESCALA_PROVEEDORES (
  id_escala INT,
- escala_proveedor varchar(50),
+ escala_nombre varchar(50),
  PRIMARY KEY (id_escala),
 );
 
@@ -68,11 +70,12 @@ CREATE TABLE PEDIDOS (
     fecha_entrega_real DATETIME,
     fecha_pedido DATETIME,
     total INT,
-	id_escala INT,
+	--id_escala INT,
+	evaluacion_pedido VARCHAR(20),
 	fecha_evaluacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_proveedor) REFERENCES PROVEEDORES(id_proveedor),
-    FOREIGN KEY (estado) REFERENCES ESTADOS_PEDIDO(Codigo),
-	FOREIGN KEY (id_escala) REFERENCES ESCALA_PROVEEDORES(id_escala)
+    FOREIGN KEY (estado) REFERENCES ESTADOS_PEDIDO(Codigo)
+	--FOREIGN KEY (id_escala) REFERENCES ESCALA_PROVEEDORES(id_escala)
 );
 
 -- Tabla DETALLE_PEDIDO
@@ -89,48 +92,49 @@ CREATE TABLE DETALLE_PEDIDO (
 
 -- Tabla RANKING_PROVEEDOR (rediseñada sin id_ranking)
 CREATE TABLE RANKING_PROVEEDOR (
-    id_escala INT,             -- Referencia al pedido evaluado
+    id_ranking_proveedor INT,             -- Referencia al pedido evaluado
     id_proveedor INT,          -- Referencia al proveedor evaluado
     valor_original VARCHAR(50),  -- Valor dado por el proveedor (ej: "Bueno", "4 estrellas")
     ponderacion INT,           -- Valor normalizado (ej: Bueno=6, 4 estrellas=8)
 	descripcion_valor VARCHAR(50),
-    PRIMARY KEY (id_escala, id_proveedor), -- Clave primaria compuesta
+	id_escala INT,
+    PRIMARY KEY (id_ranking_proveedor), -- Clave primaria compuesta
     FOREIGN KEY (id_escala) REFERENCES ESCALA_PROVEEDORES(id_escala), -- Relación con PEDIDOS
     FOREIGN KEY (id_proveedor) REFERENCES PROVEEDORES(id_proveedor)
 );
 
 -- Proveedor 1
-INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor, id_escala)
 VALUES
-(1, 'A', 1.0, 'Excelente'),
-(1, 'B', 0.8, 'Muy Bueno'),
-(1, 'C', 0.6, 'Bueno'),
-(1, 'D', 0.4, 'Regular'),
-(1, 'E', 0.2, 'Malo');
+(1, 'A', 1.0, 'Excelente', 1),
+(1, 'B', 0.8, 'Muy Bueno', 1),
+(1, 'C', 0.6, 'Bueno', 1),
+(1, 'D', 0.4, 'Regular', 1),
+(1, 'E', 0.2, 'Malo', 1);
 
 -- Proveedor 2
-INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor, id_escala)
 VALUES
-(2, 5, 1.0, 'Excelente'),
-(2, 4, 0.8, 'Muy Bueno'),
-(2, 3, 0.6, 'Bueno'),
-(2, 2, 0.4, 'Regular'),
-(2, 1, 0.2, 'Malo');
+(2, 5, 1.0, 'Excelente', 2),
+(2, 4, 0.8, 'Muy Bueno', 2),
+(2, 3, 0.6, 'Bueno', 2),
+(2, 2, 0.4, 'Regular', 2),
+(2, 1, 0.2, 'Malo', 2);
 
 -- Proveedor 3
-INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor, , id_escala)
 VALUES
-(3, 100, 1.0, 'Excelente'),
-(3, 80, 0.8, 'Muy Bueno'),
-(3, 60, 0.6, 'Bueno'),
-(3, 40, 0.4, 'Regular'),
-(3, 20, 0.2, 'Malo');
+(3, 100, 1.0, 'Excelente', 3),
+(3, 80, 0.8, 'Muy Bueno', 3),
+(3, 60, 0.6, 'Bueno', 3),
+(3, 40, 0.4, 'Regular', 3),
+(3, 20, 0.2, 'Malo', 3);
 
 -- Proveedor 4
-INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor, id_escala)
 VALUES
-(4, '*****', 1.0, 'Excelente'),
-(4, '****', 0.8, 'Muy Bueno'),
-(4, '***', 0.6, 'Bueno'),
-(4, '**', 0.4, 'Regular'),
-(4, '*', 0.2, 'Malo');
+(4, '*****', 1.0, 'Excelente', 4),
+(4, '****', 0.8, 'Muy Bueno', 4),
+(4, '***', 0.6, 'Bueno', 4),
+(4, '**', 0.4, 'Regular', 4),
+(4, '*', 0.2, 'Malo', 4);
