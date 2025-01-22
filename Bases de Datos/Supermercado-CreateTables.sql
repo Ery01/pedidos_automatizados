@@ -42,6 +42,12 @@ CREATE TABLE PRODUCTO_PROVEEDOR (
 );
 GO
 
+CREATE TABLE ESCALA_PROVEEDORES (
+    id_escala INT IDENTITY(1,1) PRIMARY KEY,
+    descripcion VARCHAR(50)
+);
+GO
+
 -- Tabla de dominio: EstadosPedido
 CREATE TABLE ESTADOS_PEDIDO (
     Codigo VARCHAR(20) PRIMARY KEY, -- Código único para identificar el estado
@@ -84,12 +90,15 @@ GO
 -- Tabla RANKING_PROVEEDOR 
 CREATE TABLE RANKING_PROVEEDOR (
     id_ranking_proveedor INT IDENTITY(1,1) PRIMARY KEY, -- Agregado como clave primaria autoincremental
-    id_proveedor INT,           -- Referencia al proveedor dueño de la tabla
+    id_escala INT,
+	id_proveedor INT,           -- Referencia al proveedor dueño de la tabla
     valor_original VARCHAR(50), -- Valor dado por el proveedor (ej: "Bueno", "4 estrellas")
     ponderacion DECIMAL(10,2),  -- Valor normalizado (ej: Bueno=6, 4 estrellas=8)
     descripcion_valor VARCHAR(50),
-    FOREIGN KEY (id_proveedor) REFERENCES PROVEEDORES(id_proveedor)
+    FOREIGN KEY (id_proveedor) REFERENCES PROVEEDORES(id_proveedor),
+	FOREIGN KEY (id_escala) REFERENCES ESCALA_PROVEEDORES(id_escala)
 );
+GO
 
 INSERT INTO USUARIOS (usuario, clave)
 VALUES 
@@ -99,10 +108,10 @@ GO
 
 INSERT INTO PROVEEDORES (nombre, cuil, mail, nombre_url, token, tecnologia, habilitado, puntaje, fecha_actualizacion_proveedor)
 VALUES 
-('Proveedor A', '20-12345678-9', 'contacto@proveedora.com', 'proveedora', 'token123', 'API', 1, 4.5, CAST(GETDATE() AS DATE)),
-('Proveedor B', '30-87654321-9', 'info@proveedorb.com', 'proveedorb', 'token456', 'API', 1, 3.8, CAST(GETDATE() AS DATE)),
-('Proveedor C', '40-11111111-1', 'contacto@proveedorc.com', 'proveedorc', 'token789', 'API', 1, 4.0, CAST(GETDATE() AS DATE)),
-('Proveedor D', '50-22222222-2', 'contacto@proveedord.com', 'proveedord', 'token101', 'API', 1, 3.5, CAST(GETDATE() AS DATE));
+('Proveedor A', '20-12345678-9', 'contacto@proveedora.com', 'proveedora', 'token123', 'REST', 1, 4.5, CAST(GETDATE() AS DATE)),
+('Proveedor B', '30-87654321-9', 'info@proveedorb.com', 'proveedorb', 'token456', 'REST', 1, 3.8, CAST(GETDATE() AS DATE)),
+('Proveedor C', '40-11111111-1', 'contacto@proveedorc.com', 'proveedorc', 'token789', 'SOAP', 1, 4.0, CAST(GETDATE() AS DATE)),
+('Proveedor D', '50-22222222-2', 'contacto@proveedord.com', 'proveedord', 'token101', 'SOAP', 1, 3.5, CAST(GETDATE() AS DATE));
 GO
 
 -- INSERTS para PRODUCTOS
@@ -123,7 +132,7 @@ GO
 INSERT INTO ESTADOS_PEDIDO (Codigo, Descripcion)
 VALUES
 ('PENDIENTE', 'Pedido en espera de procesamiento.'),
-('EN_PROCESO', 'Pedido en proceso de preparación.'),
+('EN PROCESO', 'Pedido en proceso de preparación.'),
 ('ENVIADO', 'Pedido enviado al cliente.'),
 ('ENTREGADO', 'Pedido entregado exitosamente.'),
 ('CANCELADO', 'Pedido cancelado por el cliente o sistema.');
@@ -141,44 +150,52 @@ VALUES
 (2, '2345678901234', 5, 200.75, '2025-01-20');
 GO
 
--- Proveedor 1
-INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+INSERT INTO ESCALA_PROVEEDORES(descripcion) 
 VALUES
-(1, 'A', 1.0, 'Excelente'),
-(1, 'B', 0.8, 'Muy Bueno'),
-(1, 'C', 0.6, 'Bueno'),
-(1, 'D', 0.4, 'Regular'),
-(1, 'E', 0.2, 'Malo');
+('LETRAS'),
+('1 AL 5'),
+('0 AL 100'),
+('ESTRELLAS');
+GO
+
+-- Proveedor 1
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, id_escala, valor_original, ponderacion, descripcion_valor)
+VALUES
+(1, 1, 'A', 1.0, 'Excelente'),
+(1, 1, 'B', 0.8, 'Muy Bueno'),
+(1, 1, 'C', 0.6, 'Bueno'),
+(1, 1, 'D', 0.4, 'Regular'),
+(1, 1, 'E', 0.2, 'Malo');
 GO
 
 -- Proveedor 2
-INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, id_escala, valor_original, ponderacion, descripcion_valor)
 VALUES
-(2, 5, 1.0, 'Excelente'),
-(2, 4, 0.8, 'Muy Bueno'),
-(2, 3, 0.6, 'Bueno'),
-(2, 2, 0.4, 'Regular'),
-(2, 1, 0.2, 'Malo');
+(2, 2, 5, 1.0, 'Excelente'),
+(2, 2, 4, 0.8, 'Muy Bueno'),
+(2, 2, 3, 0.6, 'Bueno'),
+(2, 2, 2, 0.4, 'Regular'),
+(2, 2, 1, 0.2, 'Malo');
 GO
 
 -- Proveedor 3
-INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, id_escala, valor_original, ponderacion, descripcion_valor)
 VALUES
-(3, 100, 1.0, 'Excelente'),
-(3, 80, 0.8, 'Muy Bueno'),
-(3, 60, 0.6, 'Bueno'),
-(3, 40, 0.4, 'Regular'),
-(3, 20, 0.2, 'Malo');
+(3, 3, 100, 1.0, 'Excelente'),
+(3, 3, 80, 0.8, 'Muy Bueno'),
+(3, 3, 60, 0.6, 'Bueno'),
+(3, 3, 40, 0.4, 'Regular'),
+(3, 3, 20, 0.2, 'Malo');
 GO
 
 -- Proveedor 4
-INSERT INTO RANKING_PROVEEDOR (id_proveedor, valor_original, ponderacion, descripcion_valor)
+INSERT INTO RANKING_PROVEEDOR (id_proveedor, id_escala, valor_original, ponderacion, descripcion_valor)
 VALUES
-(4, '*****', 1.0, 'Excelente'),
-(4, '****', 0.8, 'Muy Bueno'),
-(4, '***', 0.6, 'Bueno'),
-(4, '**', 0.4, 'Regular'),
-(4, '*', 0.2, 'Malo');
+(4, 4, 5, 1.0, 'Excelente'),
+(4, 4, 4, 0.8, 'Muy Bueno'),
+(4, 4, 3, 0.6, 'Bueno'),
+(4, 4, 2, 0.4, 'Regular'),
+(4, 4, 1, 0.2, 'Malo');
 GO
 
 -- Verificar contenido de la tabla USUARIOS
@@ -195,6 +212,9 @@ SELECT * FROM PRODUCTOS;
 
 -- Verificar contenido de la tabla PRODUCTO_PROVEEDOR
 SELECT * FROM PRODUCTO_PROVEEDOR;
+
+-- Verificar contenido de la tabla ESCALA_PROVEEDORES
+SELECT * FROM ESCALA_PROVEEDORES;
 
 -- Verificar contenido de la tabla RANKING_PROVEEDOR
 SELECT * FROM RANKING_PROVEEDOR;
