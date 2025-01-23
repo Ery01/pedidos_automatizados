@@ -35,7 +35,7 @@ CREATE TABLE PEDIDOS (
     fecha_entrega_real DATETIME,
     total INT,
     id_escala INT,
-	codigo_seguimienti VARCHAR(20),
+	codigo_seguimiento VARCHAR(20),
     FOREIGN KEY (id_cliente) REFERENCES CLIENTES(id_cliente) ON DELETE SET NULL,
     FOREIGN KEY (id_escala) REFERENCES ESCALA(id_escala) ON DELETE SET NULL
 );
@@ -50,4 +50,3 @@ CREATE TABLE DETALLE_PEDIDOS (
     FOREIGN KEY (id_pedido) REFERENCES PEDIDOS(id_pedido) ON DELETE CASCADE,
     FOREIGN KEY (codigo_barra_producto) REFERENCES PRODUCTOS(codigo_barra) ON DELETE CASCADE
 );
-

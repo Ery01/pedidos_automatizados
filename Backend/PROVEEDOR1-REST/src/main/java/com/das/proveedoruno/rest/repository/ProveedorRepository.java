@@ -38,11 +38,11 @@ public class ProveedorRepository {
 		} catch (Exception e) {
 			throw new RuntimeException("Error ejecutando el procedimiento almacenado: OBTENER_CONFIGURACION", e);
 		}
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
-	public String getProductos() {		
+	public String getProductos() {
 		try {
 			SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp).withProcedureName("OBTENER_PRODUCTOS")
 					.withSchemaName("dbo");
@@ -60,13 +60,14 @@ public class ProveedorRepository {
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Error ejecutando el procedimiento almacenado: OBTENER_PRODUCTOS", e);
-		}		
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public String getEscala() {		
+	public String getEscala() {
 		try {
-			SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp).withProcedureName("OBTENER_ESCALA").withSchemaName("dbo");
+			SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp).withProcedureName("OBTENER_ESCALA")
+					.withSchemaName("dbo");
 
 			SqlParameterSource in = new MapSqlParameterSource();
 			Map<String, Object> out = jdbcCall.execute(in);
@@ -83,29 +84,98 @@ public class ProveedorRepository {
 			throw new RuntimeException("Error ejecutando el procedimiento almacenado: OBTENER_ESCALA", e);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-    public String getPedido(JsonNode pedidoJson) {
+	public String getPedido(JsonNode pedidoJson) {
 		try {
 			String jsonString = pedidoJson.toString();
-	        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp);
-	        
-	        SqlParameterSource in = new MapSqlParameterSource()
-					.addValue("json", jsonString);
-	        
-	        Map<String, Object> out = jdbcCall.withProcedureName("OBTENER_PEDIDO")
-					.withSchemaName("dbo")
-					.execute(in);
-				List<Map<String, Object>> resultSet = (List<Map<String, Object>>) out.get("#result-set-1");
-				
-				if (resultSet != null && !resultSet.isEmpty()) {
-					Map<String, Object> firstRow = resultSet.get(0);
-					return (String) firstRow.get("Pedido");
-				} else {
-					throw new RuntimeException("Error al recuperar el Pedido.");
-				}
+			SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp);
+
+			SqlParameterSource in = new MapSqlParameterSource().addValue("json", jsonString);
+
+			Map<String, Object> out = jdbcCall.withProcedureName("OBTENER_PEDIDO").withSchemaName("dbo").execute(in);
+			List<Map<String, Object>> resultSet = (List<Map<String, Object>>) out.get("#result-set-1");
+
+			if (resultSet != null && !resultSet.isEmpty()) {
+				Map<String, Object> firstRow = resultSet.get(0);
+				return (String) firstRow.get("Pedido");
+			} else {
+				throw new RuntimeException("Error al recuperar el Pedido.");
+			}
 		} catch (Exception e) {
 			throw new RuntimeException("Error ejecutando el procedimiento almacenado: OBTENER_PRODUCTOS", e);
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	public String getPedidos() {
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp).withProcedureName("OBTENER_PEDIDOS")
+				.withSchemaName("dbo");
+
+		SqlParameterSource in = new MapSqlParameterSource();
+		Map<String, Object> out = jdbcCall.execute(in);
+
+		List<Map<String, Object>> resultSet = (List<Map<String, Object>>) out.get("#result-set-1");
+
+		if (resultSet != null && !resultSet.isEmpty()) {
+			Map<String, Object> firstRow = resultSet.get(0);
+			return (String) firstRow.get("Pedidos");
+		} else {
+			throw new RuntimeException("Error ejecutando el procedimiento almacenado: OBTENER_PEDIDOS.");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public String cancelarPedido(String jsonString) {
+		try {
+			SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp);
+
+			SqlParameterSource in = new MapSqlParameterSource().addValue("json", jsonString);
+
+			Map<String, Object> out = jdbcCall.withProcedureName("CANCELAR_PEDIDO").withSchemaName("dbo").execute(in);
+			List<Map<String, Object>> resultSet = (List<Map<String, Object>>) out.get("#result-set-1");
+
+			if (resultSet != null && !resultSet.isEmpty()) {
+				Map<String, Object> firstRow = resultSet.get(0);
+				return (String) firstRow.get("PedidoCancelado");
+			} else {
+				throw new RuntimeException("No se devolvió el pedido cancelado.");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error ejecutando el procedimiento almacenado: CANCELAR_PEDIDO", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public String insertarPedido(String jsonString) {
+		try {
+			SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp);
+
+			SqlParameterSource in = new MapSqlParameterSource().addValue("json", jsonString);
+
+			Map<String, Object> out = jdbcCall.withProcedureName("INSERTAR_DETALLE").withSchemaName("dbo").execute(in);
+			List<Map<String, Object>> resultSet = (List<Map<String, Object>>) out.get("#result-set-1");
+
+			if (resultSet != null && !resultSet.isEmpty()) {
+				SimpleJdbcCall jdbcCallpedido = new SimpleJdbcCall(jdbcTmp);
+				SqlParameterSource inPedido = new MapSqlParameterSource();
+
+				Map<String, Object> outPedido = jdbcCallpedido.withProcedureName("OBTENER_DETALLES_ULTIMO_PEDIDO")
+						.withSchemaName("dbo").execute(inPedido);
+				List<Map<String, Object>> resultSetPedido = (List<Map<String, Object>>) outPedido.get("#result-set-1");
+				if (resultSetPedido != null && !resultSetPedido.isEmpty()) {
+					Map<String, Object> firstRow = resultSetPedido.get(0);
+					return (String) firstRow.get("Resultado");
+				} else {
+					throw new RuntimeException("No se insertó el Pedido.");
+				}
+			} else {
+				throw new RuntimeException("No se devolvió el Pedido.");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error ejecutando el procedimiento almacenado", e);
+		}
+	}
+	
+	
 }

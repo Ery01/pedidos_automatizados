@@ -57,7 +57,7 @@ AS
 DECLARE
 @codigo_seguimiento VARCHAR(150) = (SELECT codigo_seguimiento = JSON_VALUE(@json, '$.codigo_seguimiento') )
 BEGIN
-
+		
 DECLARE @jsonResult NVARCHAR(MAX);
 
     -- Generar el JSON desde la tabla PEDIDOS
@@ -128,7 +128,7 @@ BEGIN
         );
 
         -- Devolver el JSON con un nombre de columna específico
-        SELECT @jsonResult AS Pedido;
+        SELECT @jsonResult AS PedidoCancelado;
     END
     ELSE
     BEGIN
@@ -190,7 +190,7 @@ BEGIN
     WHERE id_pedido = @id_pedido;
 
     -- Devolver el código de seguimiento como resultado
-    SELECT @codigo_seguimiento AS Pedido;
+    SELECT @codigo_seguimiento AS PedidoInsertado;
 END;
 GO
 
@@ -273,12 +273,50 @@ BEGIN
 END;
 GO
 
---////////////////////////////////////////////////////////////////////////////////////////////////////////////////VERIFICAR TOKEN
+--/////////////////////////////////////////////////////////////////////////////////////////////////
 
 CREATE OR ALTER   PROCEDURE VERIFICAR_TOKEN
     @token VARCHAR(150)
 AS
 BEGIN
 	SELECT token_api FROM CLIENTES WHERE token_api = @token 
+END;
+GO
+
+--/////////////////////////////////////////////////////////////////////////////////////////////////
+
+CREATE OR ALTER PROCEDURE OBTENER_DETALLE_ULTIMO_PEDIDO
+AS
+BEGIN
+    DECLARE @id_pedido INT;
+
+    SELECT @id_pedido = MAX(id_pedido) FROM PEDIDOS;
+
+    IF @id_pedido IS NULL
+    BEGIN
+        RAISERROR('No se encontraron pedidos.', 16, 1);
+        RETURN;
+    END
+
+    -- Datos del pedido
+    DECLARE @pedido NVARCHAR(MAX);
+    SELECT @pedido = (SELECT p.id_pedido, p.codigo_estado, p.fecha_entrega_prevista, p.fecha_entrega_real, p.fecha_pedido, p.id_escala, p.total, p.codigo_seguimiento
+                      FROM PEDIDOS p
+                      WHERE p.id_pedido = @id_pedido
+                      FOR JSON PATH, WITHOUT_ARRAY_WRAPPER);
+
+    -- Datos del detalle del pedido
+    DECLARE @detalles NVARCHAR(MAX);
+    SELECT @detalles = (SELECT dp.codigo_barra_producto, dp.cantidad, dp.precio_unitario
+                        FROM DETALLE_PEDIDOS dp
+                        WHERE dp.id_pedido = @id_pedido
+                        FOR JSON PATH);	
+
+    -- Combinar ambos resultados en un solo JSON
+    DECLARE @jsonResult NVARCHAR(MAX);
+    SET @jsonResult = CONCAT('[{"Pedido":', @pedido, ', "Detalles":', @detalles, '}]');
+
+    -- Devolver el resultado final
+    SELECT @jsonResult AS Resultado;
 END;
 GO
