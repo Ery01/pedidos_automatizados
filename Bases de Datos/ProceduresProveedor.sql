@@ -1,16 +1,17 @@
+
+--/////////////////////////////////////////////////////////////////////////////////////////////////
+
 CREATE OR ALTER PROCEDURE dbo.OBTENER_CONFIGURACION
 AS
 BEGIN 
 DECLARE @jsonResult NVARCHAR(MAX);
 
-    -- Generar el JSON desde la tabla CONFIGURACION
     SELECT @jsonResult = (
         SELECT * 
         FROM CLIENTES 
         FOR JSON AUTO
     );
 
-    -- Devolver el JSON con un nombre de columna específico
     SELECT @jsonResult AS Configuracion;
 	END;
 GO
@@ -38,14 +39,13 @@ CREATE OR ALTER PROCEDURE dbo.OBTENER_ESCALA
 AS
 BEGIN
   DECLARE @jsonResult NVARCHAR(MAX);
--- Generar el JSON desde la tabla CONFIGURACION
+
     SELECT @jsonResult = (
         SELECT * 
         FROM ESCALA 
         FOR JSON AUTO
     );
-
-    -- Devolver el JSON con un nombre de columna específico
+	
     SELECT @jsonResult AS Escala;
 END;
 GO
@@ -60,7 +60,6 @@ BEGIN
 		
 DECLARE @jsonResult NVARCHAR(MAX);
 
-    -- Generar el JSON desde la tabla PEDIDOS
     SELECT @jsonResult = (
         SELECT * 
         FROM PEDIDOS 
@@ -68,9 +67,8 @@ DECLARE @jsonResult NVARCHAR(MAX);
         FOR JSON AUTO
     );
 
-    -- Devolver el JSON con un nombre de columna específico
     SELECT @jsonResult AS Pedido;
-	END;
+END;
 GO
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +78,6 @@ AS
 BEGIN 
 DECLARE @jsonResult NVARCHAR(MAX);
 
-    -- Generar el JSON desde la tabla CONFIGURACION
     SELECT @jsonResult = (
         SELECT * 
 		FROM PEDIDOS 
@@ -96,11 +93,8 @@ DECLARE @jsonResult NVARCHAR(MAX);
         FOR JSON AUTO
     );
 
-    -- Devolver el JSON con un nombre de columna específico
     SELECT @jsonResult AS Pedidos
-	END;
-	GO
-EXECUTE OBTENER_PEDIDOS 
+END;
 GO
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,71 +120,13 @@ BEGIN
             WHERE codigo_seguimiento = @codigo_seguimiento
             FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER
         );
-
-        -- Devolver el JSON con un nombre de columna específico
+		
         SELECT @jsonResult AS PedidoCancelado;
     END
     ELSE
     BEGIN
-        -- Si no es 'PENDIENTE', lanzar un error o mensaje informativo
         RAISERROR('El pedido no está en estado PENDIENTE o no EXISTE. No se puede cancelar.', 16, 1);
     END	
-END;
-GO
-
---/////////////////////////////////////////////////////////////////////////////////////////////////
-
-CREATE OR ALTER PROCEDURE dbo.INSERTAR_PEDIDO
-    @id_cliente INT, -- Nuevo parámetro para vincular al cliente
-    @json NVARCHAR(MAX), -- JSON con los productos
-    @codigo_seguimiento NVARCHAR(150) OUTPUT
-AS
-BEGIN
-    DECLARE @fecha_actual DATETIME = GETDATE();
-    DECLARE @nuevo_id_pedido TABLE (id_pedido INT);
-    DECLARE @id_pedido INT;
-
-    -- Insertar el nuevo pedido
-    INSERT INTO PEDIDOS (
-        id_cliente,
-        codigo_estado,
-        fecha_pedido,
-        fecha_entrega_prevista,
-        total,
-        codigo_seguimiento,
-        id_escala
-    )
-    OUTPUT inserted.id_pedido INTO @nuevo_id_pedido
-    VALUES (
-        @id_cliente,
-        'PENDIENTE',
-        @fecha_actual,
-        DATEADD(DAY, 3, @fecha_actual),
-        0, -- Total inicial en 0, se actualizará después
-        CONCAT('ABCD', FLOOR(RAND() * (999999 - 1) + 1)),
-        1 -- Asumiendo id_escala = 1 por defecto
-    );
-
-    -- Obtener el id_pedido generado
-    SELECT @id_pedido = id_pedido FROM @nuevo_id_pedido;
-
-    -- Verificar si el pedido fue insertado correctamente
-    IF @id_pedido IS NULL
-    BEGIN
-        RAISERROR('No se pudo insertar el pedido.', 16, 1);
-        RETURN;
-    END
-
-    -- Llamar a INSERTAR_DETALLE para registrar los detalles del pedido
-    EXEC INSERTAR_DETALLE @id_pedido, @json;
-
-    -- Obtener el código de seguimiento
-    SELECT @codigo_seguimiento = codigo_seguimiento
-    FROM PEDIDOS
-    WHERE id_pedido = @id_pedido;
-
-    -- Devolver el código de seguimiento como resultado
-    SELECT @codigo_seguimiento AS PedidoInsertado;
 END;
 GO
 
@@ -203,7 +139,6 @@ AS
 BEGIN
     DECLARE @total DECIMAL(18, 2) = 0;
 
-    -- Procesar el JSON y recorrer los elementos
     DECLARE @json_table TABLE (
         codigo_barra NVARCHAR(150),
         cantidad INT
@@ -217,7 +152,6 @@ BEGIN
         cantidad INT '$.cantidad'
     );
 
-    -- Insertar los detalles del pedido
     DECLARE @codigo_barra NVARCHAR(150);
     DECLARE @cantidad INT;
     DECLARE @precio_unitario DECIMAL(18, 2);
@@ -230,12 +164,10 @@ BEGIN
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
-        -- Obtener el precio del producto
         SELECT @precio_unitario = precio
         FROM PRODUCTOS
         WHERE codigo_barra = @codigo_barra;
 
-        -- Verificar si el precio fue encontrado
         IF @precio_unitario IS NULL
         BEGIN
             RAISERROR('No se encontró el precio para el código de barra: %s', 16, 1, @codigo_barra);
@@ -244,13 +176,11 @@ BEGIN
             RETURN;
         END
 
-        -- Calcular el total
         SET @total = @total + (@precio_unitario * @cantidad);
 
-        -- Insertar en DETALLE_PEDIDOS
-        INSERT INTO DETALLE_PEDIDOS (
+        INSERT INTO DETALLE_PEDIDO (
             id_pedido,
-            codigo_barra_producto,
+            codigo_barra,
             cantidad,
             precio_unitario
         ) VALUES (
@@ -266,10 +196,59 @@ BEGIN
     CLOSE detalle_cursor;
     DEALLOCATE detalle_cursor;
 
-    -- Actualizar el total en la tabla PEDIDOS
     UPDATE PEDIDOS
     SET total = @total
     WHERE id_pedido = @id_pedido;
+END;
+GO
+
+--/////////////////////////////////////////////////////////////////////////////////////////////////
+
+CREATE OR ALTER PROCEDURE dbo.INSERTAR_PEDIDO
+    @id_cliente INT,
+    @json NVARCHAR(MAX),
+    @codigo_seguimiento NVARCHAR(150) OUTPUT
+AS
+BEGIN
+    DECLARE @fecha_actual DATETIME = GETDATE();
+    DECLARE @nuevo_id_pedido TABLE (id_pedido INT);
+    DECLARE @id_pedido INT;
+
+    INSERT INTO PEDIDOS (
+        id_cliente,
+        codigo_estado,
+        fecha_pedido,
+        fecha_entrega_prevista,
+        total,
+        codigo_seguimiento,
+        id_escala
+    )
+    OUTPUT inserted.id_pedido INTO @nuevo_id_pedido
+    VALUES (
+        @id_cliente,
+        'PENDIENTE',
+        @fecha_actual,
+        DATEADD(DAY, 3, @fecha_actual),
+        0, 
+        CONCAT('ABCD', FLOOR(RAND() * (999999 - 1) + 1)),
+        1
+    );
+
+    SELECT @id_pedido = id_pedido FROM @nuevo_id_pedido;
+
+    IF @id_pedido IS NULL
+    BEGIN
+        RAISERROR('No se pudo insertar el pedido.', 16, 1);
+        RETURN;
+    END
+
+    EXEC INSERTAR_DETALLE @id_pedido, @json;
+
+    SELECT @codigo_seguimiento = codigo_seguimiento
+    FROM PEDIDOS
+    WHERE id_pedido = @id_pedido;
+
+    SELECT @codigo_seguimiento AS PedidoInsertado;
 END;
 GO
 
@@ -307,8 +286,8 @@ BEGIN
 
     -- Datos del detalle del pedido
     DECLARE @detalles NVARCHAR(MAX);
-    SELECT @detalles = (SELECT dp.codigo_barra_producto, dp.cantidad, dp.precio_unitario
-                        FROM DETALLE_PEDIDOS dp
+    SELECT @detalles = (SELECT dp.codigo_barra, dp.cantidad, dp.precio_unitario
+                        FROM DETALLE_PEDIDO dp
                         WHERE dp.id_pedido = @id_pedido
                         FOR JSON PATH);	
 
@@ -316,7 +295,81 @@ BEGIN
     DECLARE @jsonResult NVARCHAR(MAX);
     SET @jsonResult = CONCAT('[{"Pedido":', @pedido, ', "Detalles":', @detalles, '}]');
 
-    -- Devolver el resultado final
     SELECT @jsonResult AS Resultado;
 END;
+GO
+
+--/////////////////////////////////////////////////////////////////////////////////////////////////
+
+EXEC dbo.OBTENER_CONFIGURACION;
+GO
+
+EXEC dbo.OBTENER_PRODUCTOS;
+GO
+
+EXEC dbo.OBTENER_ESCALA;
+GO
+
+EXEC dbo.OBTENER_PEDIDO @json = '{"codigo_seguimiento": "TRACK123"}';
+GO
+
+EXEC dbo.OBTENER_PEDIDOS;
+GO
+
+EXEC dbo.CANCELAR_PEDIDO @json = '{"codigo_seguimiento": "TRACK123"}';
+GO
+
+DECLARE @codigo_seguimiento NVARCHAR(150);
+
+EXEC dbo.INSERTAR_PEDIDO 
+    @id_cliente = 1, 
+    @json = '[{"codigo_barra": "1234567890123", "cantidad": 2}]', 
+    @codigo_seguimiento = @codigo_seguimiento OUTPUT;
+
+
+SELECT @codigo_seguimiento AS CodigoSeguimiento;
+GO
+
+EXEC dbo.OBTENER_DETALLE_ULTIMO_PEDIDO;
+GO
+
+-- Eliminar procedimientos almacenados
+IF OBJECT_ID('dbo.OBTENER_CONFIGURACION', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.OBTENER_CONFIGURACION;
+GO
+
+IF OBJECT_ID('dbo.OBTENER_PRODUCTOS', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.OBTENER_PRODUCTOS;
+GO
+
+IF OBJECT_ID('dbo.OBTENER_ESCALA', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.OBTENER_ESCALA;
+GO
+
+IF OBJECT_ID('dbo.OBTENER_PEDIDO', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.OBTENER_PEDIDO;
+GO
+
+IF OBJECT_ID('dbo.OBTENER_PEDIDOS', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.OBTENER_PEDIDOS;
+GO
+
+IF OBJECT_ID('dbo.CANCELAR_PEDIDO', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.CANCELAR_PEDIDO;
+GO
+
+IF OBJECT_ID('dbo.INSERTAR_PEDIDO', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.INSERTAR_PEDIDO;
+GO
+
+IF OBJECT_ID('dbo.INSERTAR_DETALLE', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.INSERTAR_DETALLE;
+GO
+
+IF OBJECT_ID('dbo.VERIFICAR_TOKEN', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.VERIFICAR_TOKEN;
+GO
+
+IF OBJECT_ID('dbo.OBTENER_DETALLE_ULTIMO_PEDIDO', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.OBTENER_DETALLE_ULTIMO_PEDIDO;
 GO
