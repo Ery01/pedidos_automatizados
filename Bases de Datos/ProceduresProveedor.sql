@@ -254,7 +254,7 @@ GO
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////
 
-CREATE OR ALTER   PROCEDURE VERIFICAR_TOKEN
+CREATE OR ALTER PROCEDURE VERIFICAR_TOKEN
     @token VARCHAR(150)
 AS
 BEGIN
