@@ -1,16 +1,16 @@
 package com.das.proveedoruno.rest.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 import com.das.proveedoruno.rest.repository.ProveedorRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,7 +24,7 @@ public class ProveedorController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProveedorController.class);
 	
-	@PostMapping(path = "/configuracion",
+	@GetMapping(path = "/configuracion",
             produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> getConfiguracion() {
 		try {
@@ -37,7 +37,7 @@ public class ProveedorController {
 		}
 	}
 	
-	@PostMapping(path = "/obtenerProductos",
+	@GetMapping(path = "/obtenerProductos",
             produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> getProductos() {
 		try {
@@ -50,7 +50,7 @@ public class ProveedorController {
 		}
 	}
 	
-	@PostMapping(path = "/obtenerEscala",
+	@GetMapping(path = "/obtenerEscala",
             produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> getEscala() {
 		try {
@@ -63,7 +63,7 @@ public class ProveedorController {
 		}
 	}
 	
-	@PostMapping(path = "/obtenerPedido",
+	@GetMapping(path = "/obtenerPedido",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<String> getPedido(@RequestBody JsonNode json) {
@@ -77,7 +77,7 @@ public class ProveedorController {
 		}
 	}
 	
-	@PostMapping(path = "/obtenerPedidos",
+	@GetMapping(path = "/obtenerPedidos",
             produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> getPedidos() {
 		try {
