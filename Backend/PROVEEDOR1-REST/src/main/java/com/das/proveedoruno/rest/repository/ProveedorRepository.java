@@ -3,6 +3,7 @@ package com.das.proveedoruno.rest.repository;
 import java.sql.Types;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -150,49 +151,35 @@ public class ProveedorRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public String insertarPedido(JsonNode json) {
-		try {
-			String jsonString = json.toString();
-			
-			SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp)
-					.withProcedureName("INSERTAR_PEDIDO")
-					.withSchemaName("dbo")
-					.declareParameters(
-							new SqlParameter("json", Types.VARCHAR), 
-							new SqlOutParameter("codigo_seguimiento", Types.VARCHAR));
+	public String insertarPedido(int idCliente, JsonNode json) {
+	    try {
+	        String jsonString = json.toString();
 
-			SqlParameterSource in = new MapSqlParameterSource().addValue("json", jsonString);
+	        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTmp)
+	                .withProcedureName("INSERTAR_PEDIDO")
+	                .withSchemaName("dbo")
+	                .declareParameters(
+	                        new SqlParameter("id_cliente", Types.INTEGER),
+	                        new SqlParameter("json", Types.VARCHAR),       
+	                        new SqlOutParameter("codigo_seguimiento", Types.VARCHAR) 
+	                );
 
-			Map<String, Object> out = jdbcCall.execute(in);
-			
-			String codigoSeguimiento = (String) out.get("codigo_seguimiento");
-			
-			List<Map<String, Object>> resultSet = (List<Map<String, Object>>) out.get("#result-set-1");
+	        SqlParameterSource in = new MapSqlParameterSource()
+	                .addValue("id_cliente", idCliente) 
+	                .addValue("json", jsonString);   
 
-			Map<String, Object> firstRow = resultSet.get(0);            
-			
-			return (String) firstRow.get("Resultado");
-			
-//			if (resultSet != null && !resultSet.isEmpty()) {
-//				SimpleJdbcCall jdbcCallpedido = new SimpleJdbcCall(jdbcTmp);
-//				SqlParameterSource inPedido = new MapSqlParameterSource();
-//
-//				Map<String, Object> outPedido = jdbcCallpedido.withProcedureName("OBTENER_DETALLES_ULTIMO_PEDIDO")
-//						.withSchemaName("dbo").execute(inPedido);
-//				List<Map<String, Object>> resultSetPedido = (List<Map<String, Object>>) outPedido.get("#result-set-1");
-//				if (resultSetPedido != null && !resultSetPedido.isEmpty()) {
-//					Map<String, Object> firstRow = resultSetPedido.get(0);
-//					
-//				} else {
-//					throw new RuntimeException("No se insertó el Pedido.");
-//				}
-//			} else {
-//				throw new RuntimeException("No se devolvió el Pedido.");
-//			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error ejecutando el procedimiento almacenado", e);
-		}
+	        Map<String, Object> out = jdbcCall.execute(in);
+
+	        String codigoSeguimiento = (String) out.get("codigo_seguimiento");
+
+	        if (codigoSeguimiento == null || codigoSeguimiento.isEmpty()) {
+	            throw new RuntimeException("El procedimiento no devolvió un código de seguimiento válido.");
+	        }
+
+	        return codigoSeguimiento;
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error ejecutando el procedimiento almacenado: " + e.getMessage(), e);
+	    }
 	}
-	
-	
 }

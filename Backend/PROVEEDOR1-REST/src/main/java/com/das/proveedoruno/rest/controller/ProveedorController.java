@@ -1,5 +1,7 @@
 package com.das.proveedoruno.rest.controller;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,16 +107,20 @@ public class ProveedorController {
 	}
 	
 	@PostMapping(path = "/insertarPedido",
-            produces = {MediaType.APPLICATION_JSON_VALUE},
-            consumes = {MediaType.APPLICATION_JSON_VALUE})
+	        produces = {MediaType.APPLICATION_JSON_VALUE},
+	        consumes = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<String> insertarPedido(@RequestBody JsonNode json) {
-		try {
-			String jsonConfig = repository.insertarPedido(json);
-			logger.info("Se ejecuto exitosamente: /insertarPedido{json}");
-            return new ResponseEntity<>(jsonConfig, HttpStatus.OK);
-		} catch (Exception e) {
-			logger.error("Error al ejecutar /insertarPedido{json}:{}", e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
+	    try {
+	        int idCliente = json.get("id_cliente").asInt(); 
+
+	        String codigoSeguimiento = repository.insertarPedido(idCliente, json.get("detalles"));
+
+	        logger.info("Se ejecuto exitosamente: /insertarPedido Codigo de Seguimiento: {}", codigoSeguimiento);
+	        return new ResponseEntity<>(codigoSeguimiento, HttpStatus.OK);
+
+	    } catch (Exception e) {
+	        logger.error("Error al ejecutar /insertarPedido: {}", e.getMessage(), e);
+	        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	    }
 	}
 }
