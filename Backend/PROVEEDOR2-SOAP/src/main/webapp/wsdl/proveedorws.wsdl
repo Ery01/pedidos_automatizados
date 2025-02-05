@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="ProveedorWSService" targetNamespace="http://ws.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <xs:schema elementFormDefault="unqualified" targetNamespace="http://ws.com/" version="1.0" xmlns:tns="http://ws.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="cancelarPedido" type="tns:cancelarPedido"/>
+
+  <xs:element name="cancelarPedidoResponse" type="tns:cancelarPedidoResponse"/>
+
+  <xs:element name="getConfiguracion" type="tns:getConfiguracion"/>
+
+  <xs:element name="getConfiguracionResponse" type="tns:getConfiguracionResponse"/>
+
+  <xs:element name="getEscala" type="tns:getEscala"/>
+
+  <xs:element name="getEscalaResponse" type="tns:getEscalaResponse"/>
+
+  <xs:element name="getPedido" type="tns:getPedido"/>
+
+  <xs:element name="getPedidoResponse" type="tns:getPedidoResponse"/>
+
+  <xs:element name="getPedidos" type="tns:getPedidos"/>
+
+  <xs:element name="getPedidosResponse" type="tns:getPedidosResponse"/>
+
+  <xs:element name="getProductos" type="tns:getProductos"/>
+
+  <xs:element name="getProductosResponse" type="tns:getProductosResponse"/>
+
+  <xs:element name="insertarPedido" type="tns:insertarPedido"/>
+
+  <xs:element name="insertarPedidoResponse" type="tns:insertarPedidoResponse"/>
+
+  <xs:complexType name="getEscala">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getEscalaResponse">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getProductos">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getProductosResponse">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="cancelarPedido">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+      <xs:element minOccurs="0" name="arg1" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="cancelarPedidoResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="insertarPedido">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+      <xs:element minOccurs="0" name="arg1" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="insertarPedidoResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPedido">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+      <xs:element minOccurs="0" name="arg1" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPedidoResponse">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPedidos">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPedidosResponse">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getConfiguracion">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getConfiguracionResponse">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getEscala">
+    <wsdl:part name="parameters" element="tns:getEscala">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getProductos">
+    <wsdl:part name="parameters" element="tns:getProductos">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getConfiguracionResponse">
+    <wsdl:part name="parameters" element="tns:getConfiguracionResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getProductosResponse">
+    <wsdl:part name="parameters" element="tns:getProductosResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getPedidoResponse">
+    <wsdl:part name="parameters" element="tns:getPedidoResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getPedido">
+    <wsdl:part name="parameters" element="tns:getPedido">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getPedidos">
+    <wsdl:part name="parameters" element="tns:getPedidos">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getPedidosResponse">
+    <wsdl:part name="parameters" element="tns:getPedidosResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelarPedido">
+    <wsdl:part name="parameters" element="tns:cancelarPedido">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getEscalaResponse">
+    <wsdl:part name="parameters" element="tns:getEscalaResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="insertarPedido">
+    <wsdl:part name="parameters" element="tns:insertarPedido">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelarPedidoResponse">
+    <wsdl:part name="parameters" element="tns:cancelarPedidoResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="insertarPedidoResponse">
+    <wsdl:part name="parameters" element="tns:insertarPedidoResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getConfiguracion">
+    <wsdl:part name="parameters" element="tns:getConfiguracion">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ProveedorWS">
+    <wsdl:operation name="getEscala">
+      <wsdl:input name="getEscala" message="tns:getEscala">
+    </wsdl:input>
+      <wsdl:output name="getEscalaResponse" message="tns:getEscalaResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getProductos">
+      <wsdl:input name="getProductos" message="tns:getProductos">
+    </wsdl:input>
+      <wsdl:output name="getProductosResponse" message="tns:getProductosResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelarPedido">
+      <wsdl:input name="cancelarPedido" message="tns:cancelarPedido">
+    </wsdl:input>
+      <wsdl:output name="cancelarPedidoResponse" message="tns:cancelarPedidoResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insertarPedido">
+      <wsdl:input name="insertarPedido" message="tns:insertarPedido">
+    </wsdl:input>
+      <wsdl:output name="insertarPedidoResponse" message="tns:insertarPedidoResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPedido">
+      <wsdl:input name="getPedido" message="tns:getPedido">
+    </wsdl:input>
+      <wsdl:output name="getPedidoResponse" message="tns:getPedidoResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPedidos">
+      <wsdl:input name="getPedidos" message="tns:getPedidos">
+    </wsdl:input>
+      <wsdl:output name="getPedidosResponse" message="tns:getPedidosResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getConfiguracion">
+      <wsdl:input name="getConfiguracion" message="tns:getConfiguracion">
+    </wsdl:input>
+      <wsdl:output name="getConfiguracionResponse" message="tns:getConfiguracionResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ProveedorWSServiceSoapBinding" type="tns:ProveedorWS">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getEscala">
+      <soap:operation soapAction="urn:GetEscala" style="document"/>
+      <wsdl:input name="getEscala">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getEscalaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getProductos">
+      <soap:operation soapAction="urn:GetProductos" style="document"/>
+      <wsdl:input name="getProductos">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getProductosResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelarPedido">
+      <soap:operation soapAction="urn:CancelarPedido" style="document"/>
+      <wsdl:input name="cancelarPedido">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="cancelarPedidoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="insertarPedido">
+      <soap:operation soapAction="urn:InsertarPedido" style="document"/>
+      <wsdl:input name="insertarPedido">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="insertarPedidoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPedido">
+      <soap:operation soapAction="urn:GetPedido" style="document"/>
+      <wsdl:input name="getPedido">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPedidoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPedidos">
+      <soap:operation soapAction="urn:GetPedidos" style="document"/>
+      <wsdl:input name="getPedidos">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPedidosResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getConfiguracion">
+      <soap:operation soapAction="urn:GetConfiguracion" style="document"/>
+      <wsdl:input name="getConfiguracion">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getConfiguracionResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ProveedorWSService">
+    <wsdl:port name="ProveedorWSPort" binding="tns:ProveedorWSServiceSoapBinding">
+      <soap:address location="http://localhost:8085/PROVEEDOR2-SOAP/services/ProveedorWSPort"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
