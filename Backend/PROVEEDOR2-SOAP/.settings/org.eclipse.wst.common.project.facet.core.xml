@@ -8,4 +8,5 @@
   <installed facet="jst.web" version="4.0"/>
   <installed facet="wst.jsdt.web" version="1.0"/>
   <installed facet="cxf.core" version="1.0"/>
+  <installed facet="jst.jaxrs" version="2.1"/>
 </faceted-project>

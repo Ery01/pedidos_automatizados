@@ -24,4 +24,18 @@
     <env-entry-type>java.lang.String</env-entry-type>
     <env-entry-value>jdbc:sqlserver://localhost;databaseName=PROVEEDOR;encrypt=false;user=sa;password=Test123</env-entry-value>
   </env-entry>
+  <servlet>
+    <description>Apache CXF Endpoint</description>
+    <display-name>cxf</display-name>
+    <servlet-name>cxf</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cxf</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+  <session-config>
+    <session-timeout>60</session-timeout>
+  </session-config>
 </web-app>
