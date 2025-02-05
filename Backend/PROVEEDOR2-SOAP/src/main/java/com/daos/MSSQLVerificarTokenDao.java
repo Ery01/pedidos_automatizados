@@ -23,7 +23,7 @@ public class MSSQLVerificarTokenDao extends Dao<String, String, String>{
 	@Override
 	public String make(ResultSet result) throws SQLException {
 		// TODO Auto-generated method stub
-		return result.getString("token");
+		return result.getString("token_api");
 	}
 
 	@Override
