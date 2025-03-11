@@ -1,4 +1,4 @@
--- Ahora puedes eliminar las tablas en el orden correcto
+
 DROP TABLE IF EXISTS DETALLE_PEDIDO;
 DROP TABLE IF EXISTS PEDIDOS;
 DROP TABLE IF EXISTS ESTADOS_PEDIDOS;

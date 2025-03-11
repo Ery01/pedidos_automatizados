@@ -1,3 +1,4 @@
+
 DROP TABLE IF EXISTS DETALLE_PEDIDO;
 DROP TABLE IF EXISTS PEDIDOS;
 DROP TABLE IF EXISTS RANKING_PROVEEDOR;
@@ -19,7 +20,7 @@ GO
 CREATE TABLE PROVEEDORES (
     id_proveedor INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(50),
-    cuil VARCHAR(150),
+    cuil VARCHAR(15),
     mail VARCHAR(150),
     nombre_url VARCHAR(150), 
     token VARCHAR(150),     
@@ -43,6 +44,7 @@ CREATE TABLE PRODUCTO_PROVEEDOR (
     codigo_barra VARCHAR(150),
     id_proveedor INT,
     precio DECIMAL(10,2),
+	fecha_actualizacion_precio DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (codigo_barra, id_proveedor),
     FOREIGN KEY (codigo_barra) REFERENCES PRODUCTOS(codigo_barra),
     FOREIGN KEY (id_proveedor) REFERENCES PROVEEDORES(id_proveedor)
@@ -56,8 +58,8 @@ CREATE TABLE ESCALA_PROVEEDORES (
 GO
 
 CREATE TABLE ESTADOS_PEDIDO (
-    Codigo VARCHAR(20) PRIMARY KEY, 
-    Descripcion VARCHAR(100) NOT NULL 
+    codigo VARCHAR(20) PRIMARY KEY, 
+    descripcion VARCHAR(100) NOT NULL 
 );
 GO
 
@@ -65,13 +67,13 @@ CREATE TABLE PEDIDOS (
     id_pedido INT IDENTITY(1,1) PRIMARY KEY,
     id_proveedor INT,
     estado VARCHAR(20) NOT NULL,
-    codigo_seguimiento VARCHAR(20),
-	fecha_entrega_prevista DATETIME,
+    codigo_seguimiento VARCHAR(50),
+	fecha_entrega_prevista DATE,
     fecha_entrega_real DATETIME,
     fecha_pedido DATETIME,
-    total INT,
-	evaluacion_pedido VARCHAR(20),
-	fecha_evaluacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    total DECIMAL(10,2) NULL,
+	evaluacion DECIMAL(10,2) NULL,
+	fecha_evaluacion DATETIME NULL,
     FOREIGN KEY (id_proveedor) REFERENCES PROVEEDORES(id_proveedor),
     FOREIGN KEY (estado) REFERENCES ESTADOS_PEDIDO(Codigo)
 );
@@ -101,51 +103,96 @@ CREATE TABLE RANKING_PROVEEDOR (
 );
 GO
 
-INSERT INTO USUARIOS (usuario, clave)
+-- ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+INSERT INTO USUARIOS (usuario, clave) 
 VALUES 
 ('admin', 'admin123'),
 ('operador', 'operador123');
 GO
 
-INSERT INTO PROVEEDORES (nombre, cuil, mail, nombre_url, token, tecnologia, habilitado, puntaje, fecha_actualizacion_proveedor)
+INSERT INTO PROVEEDORES (nombre, cuil, mail, nombre_url, token, tecnologia, habilitado, puntaje)
 VALUES 
-('Proveedor A', '20-12345678-9', 'contacto@proveedora.com', 'proveedora', 'token123', 'REST', 1, 4.5, CAST(GETDATE() AS DATE)),
-('Proveedor B', '30-87654321-9', 'info@proveedorb.com', 'proveedorb', 'token456', 'REST', 1, 3.8, CAST(GETDATE() AS DATE)),
-('Proveedor C', '40-11111111-1', 'contacto@proveedorc.com', 'proveedorc', 'token789', 'SOAP', 1, 4.0, CAST(GETDATE() AS DATE)),
-('Proveedor D', '50-22222222-2', 'contacto@proveedord.com', 'proveedord', 'token101', 'SOAP', 1, 3.5, CAST(GETDATE() AS DATE));
+('Proveedor A', '20-12345678-9', 'contacto@proveedora.com', 'proveedora', 'token123', 'REST', 1, 4.5),
+('Proveedor B', '30-87654321-9', 'info@proveedorb.com', 'proveedorb', 'token456', 'REST', 1, 3.8),
+('Proveedor C', '40-11111111-1', 'contacto@proveedorc.com', 'proveedorc', 'token789', 'SOAP', 1, 4.0),
+('Proveedor D', '50-22222222-2', 'contacto@proveedord.com', 'proveedord', 'token101', 'SOAP', 1, 3.5);
 GO
 
-INSERT INTO PRODUCTOS (codigo_barra, nombre, imagen_contenido, stock_actual, stock_minimo)
+INSERT INTO PRODUCTOS (codigo_barra, nombre, stock_actual, stock_minimo)
 VALUES 
-('1234567890123', 'Producto 1', NULL, 50, 10),
-('2345678901234', 'Producto 2', NULL, 20, 5);
-GO
+('1234567890123', 'Producto A', 5, 10),
+('9876543210987', 'Producto B', 8, 8),
+('1112223334445', 'Producto C', 12, 12),
+('5556667778889', 'Producto D', 9, 9),
+('9998887776665', 'Producto E', 30, 15),
+('1122334455667', 'Producto F', 10, 10),
+('2233445566778', 'Producto G', 5, 5),
+('3344556677889', 'Producto H', 14, 14);
 
-INSERT INTO PRODUCTO_PROVEEDOR (codigo_barra, id_proveedor, precio)
+INSERT INTO PRODUCTO_PROVEEDOR (id_proveedor, codigo_barra, precio)
 VALUES 
-('1234567890123', 1, 100.50),
-('2345678901234', 2, 200.75);
-GO
+(1, '1234567890123', 1050),
+(2, '1234567890123', 1050),
+(3, '1234567890123', 1100),
+(4, '1234567890123', 1000),
 
-INSERT INTO ESTADOS_PEDIDO (Codigo, Descripcion)
+(1, '9876543210987', 750),
+(2, '9876543210987', 800),
+(3, '9876543210987', 750),
+(4, '9876543210987', 850),
+
+(1, '1112223334445', 1300),
+(2, '1112223334445', 1350),
+(3, '1112223334445', 1300),
+(4, '1112223334445', 1250),
+
+(1, '5556667778889', 950),
+(2, '5556667778889', 900),
+(3, '5556667778889', 950),
+(4, '5556667778889', 1000),
+
+(1, '9998887776665', 600),
+(2, '9998887776665', 600),
+(3, '9998887776665', 650),
+(4, '9998887776665', 650),
+
+(1, '1122334455667', 1400),
+(2, '1122334455667', 1450),
+(3, '1122334455667', 1500),
+(4, '1122334455667', 1400),
+
+(1, '2233445566778', 700),
+(2, '2233445566778', 750),
+(3, '2233445566778', 650),
+(4, '2233445566778', 750),
+
+(1, '3344556677889', 1250),
+(2, '3344556677889', 1200),
+(3, '3344556677889', 1250),
+(4, '3344556677889', 1300);
+
+INSERT INTO ESTADOS_PEDIDO (codigo, descripcion)
 VALUES
 ('PENDIENTE', 'Pedido en espera de procesamiento.'),
 ('EN PROCESO', 'Pedido en proceso de preparación.'),
 ('ENVIADO', 'Pedido enviado al cliente.'),
 ('ENTREGADO', 'Pedido entregado exitosamente.'),
+('EVALUADO', 'Pedido evaluado por el cliente.'),
 ('CANCELADO', 'Pedido cancelado por el cliente o sistema.');
 GO
 
-INSERT INTO PEDIDOS (id_proveedor, estado, codigo_seguimiento, fecha_entrega_prevista, fecha_entrega_real, fecha_pedido, total, evaluacion_pedido, fecha_evaluacion)
+/*INSERT INTO PEDIDOS (id_proveedor, estado, codigo_seguimiento, fecha_entrega_prevista, total)
 VALUES 
-(1, 'PENDIENTE', 'TRACK123', '2025-01-25', NULL, '2025-01-20', 1000.50, NULL, NULL),
-(2, 'EN PROCESO', 'TRACK456', '2025-01-27', '2025-01-26', '2025-01-20', 1500.75, '4.2', '2025-01-27');
+(1, 'PENDIENTE', 'TRACK123', '2025-01-25', 1000),
+(2, 'EN PROCESO', 'TRACK456', '2025-01-27', 1200);
+GO*/
 
-INSERT INTO DETALLE_PEDIDO (id_pedido, codigo_barra, cantidad, precio_unitario, fecha_registro)
+/*INSERT INTO DETALLE_PEDIDO (id_pedido, codigo_barra, cantidad, precio_unitario)
 VALUES 
-(1, '1234567890123', 10, 100.50, '2025-01-20'),
-(2, '2345678901234', 5, 200.75, '2025-01-20');
-GO
+(1, '1234567890123', 10, 100),
+(2, '2345678901234', 6, 200);
+GO*/
 
 INSERT INTO ESCALA_PROVEEDORES(descripcion) 
 VALUES
@@ -191,6 +238,8 @@ VALUES
 (4, 4, 1, 0.2, 'Malo');
 GO
 
+-- ///////////////////////////////////////////////////////////////////////////////////////////////////
+
 SELECT * FROM USUARIOS;
 SELECT * FROM ESTADOS_PEDIDO;
 SELECT * FROM PROVEEDORES;
@@ -201,3 +250,5 @@ SELECT * FROM RANKING_PROVEEDOR;
 SELECT * FROM PEDIDOS;
 SELECT * FROM DETALLE_PEDIDO;
 GO
+
+-- ///////////////////////////////////////////////////////////////////////////////////////////////////
