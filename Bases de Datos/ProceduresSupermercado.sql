@@ -1,4 +1,5 @@
 
+DROP PROCEDURE IF EXISTS dbo.LOGIN_USUARIO;
 DROP PROCEDURE IF EXISTS dbo.OBTENER_CREDENCIALES;
 DROP PROCEDURE IF EXISTS dbo.CANCELAR_PEDIDO;
 DROP PROCEDURE IF EXISTS dbo.ACTUALIZAR_PUNTAJE_PROVEEDOR;
@@ -16,6 +17,33 @@ DROP PROCEDURE IF EXISTS dbo.DETECTAR_PRODUCTOS_STOCK_MINIMO;
 DROP PROCEDURE IF EXISTS dbo.ACTUALIZAR_PRECIOS_PROD_STOCK_MINIMO;
 DROP PROCEDURE IF EXISTS dbo.SELECCIONAR_MEJOR_PROVEEDOR;
 DROP PROCEDURE IF EXISTS dbo.GENERAR_PEDIDO_AUTOMATICO;
+GO
+
+--/////////////////////////////////////////////////////////////////////////////////////////////////
+
+CREATE OR ALTER PROCEDURE dbo.LOGIN_USUARIO
+    @json NVARCHAR(MAX)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @usuario NVARCHAR(50), @clave NVARCHAR(50), @resultado NVARCHAR(MAX)
+
+    SELECT 
+        @usuario = JSON_VALUE(@json, '$.usuario'),
+        @clave = JSON_VALUE(@json, '$.clave')
+
+    IF EXISTS (SELECT 1 FROM USUARIOS WHERE usuario = @usuario AND clave = @clave)
+    BEGIN
+        SET @resultado = '{"status": "success", "message": "Login exitoso"}'
+    END
+    ELSE
+    BEGIN
+        SET @resultado = '{"status": "error", "message": "Usuario o clave incorrectos"}'
+    END
+
+    SELECT @resultado AS ResultadoLogin;
+END;
 GO
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////
