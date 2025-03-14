@@ -1,4 +1,4 @@
-package com.das.repository;
+package com.das.rest.repository;
 
 import java.util.List;
 import java.util.Map;
