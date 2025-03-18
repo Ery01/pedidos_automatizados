@@ -5,9 +5,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ServiciosService } from './services/servicios.service';
 import { MainRoutingModule } from './main-routing.module';
 
-import { MainComponent } from './main.component';
 import { LoginComponent } from './pages/login/login.component';
-
+import { MainComponent } from './main.component';
 
 @NgModule({
   declarations: [

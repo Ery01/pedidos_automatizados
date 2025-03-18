@@ -1,25 +1,19 @@
 import { Injectable } from '@angular/core';
-import {
-  Resource,
-  ResourceAction,
-  ResourceHandler,
-  ResourceRequestMethod,
-  IResourceMethodObservable
-} from 'ngx-resource-core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ServiciosService extends Resource {
+export class ServiciosService {
 
-  constructor(handler: ResourceHandler, private http: HttpClient) {
-    super(handler);
+  private apiUrl = 'http://localhost:8086/super/login';
+
+  constructor(private http: HttpClient) { }
+
+  loginUsuario(usuario: string, clave: string): Observable<any> {
+    const body = { usuario, clave };
+
+    return this.http.post<any>(this.apiUrl, body);
   }
-
-  @ResourceAction({
-    method: ResourceRequestMethod.Post,
-    path: '/login',
-  })
-  loginUsuario!: IResourceMethodObservable<{ usuario: any }, any>;
 }
