@@ -9,7 +9,7 @@ import { ServiciosService } from 'src/app/main/services/servicios.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  
+
   form: FormGroup;
   submitted = false;
   errorMessage = '';
@@ -20,7 +20,7 @@ export class LoginComponent {
       clave: ['', Validators.required]
     });
   }
-  
+
   registrarLogin() {
     this.submitted = true;
 
@@ -28,12 +28,15 @@ export class LoginComponent {
       return;
     }
 
-    const { usuario, clave } = this.form.value;
+    const loginData = {
+      usuario: this.form.get('usuario')?.value,
+      clave: this.form.get('clave')?.value
+    };
 
-    this.serviciosService.loginUsuario(usuario, clave).subscribe({
+    this.serviciosService.loginUsuario(loginData).subscribe({
       next: (response) => {
         console.log('Respuesta del backend:', response);
-        alert(response.message); 
+        alert(response.message);
       },
       error: (error) => {
         console.error('Error en el login:', error);
